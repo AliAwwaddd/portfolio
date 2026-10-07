@@ -11,6 +11,7 @@ img{max-width:100%}
   --shadow:0 1px 2px rgba(16,24,40,.05), 0 10px 30px rgba(16,24,40,.08);
   --shadow-lg:0 2px 6px rgba(16,24,40,.06), 0 18px 44px rgba(16,24,40,.13);
   --maxw:720px;
+  --c-ai:#7c3aed; --c-be:#2563eb; --c-fe:#0d9488; --c-cl:#c2620a;
   color-scheme:light dark;
 }
 @media (prefers-color-scheme:dark){
@@ -20,6 +21,7 @@ img{max-width:100%}
     --accent:#6b9bff; --accent-strong:#8fb4ff; --accent-wash:#172236;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
     --shadow-lg:0 2px 6px rgba(0,0,0,.4), 0 20px 46px rgba(0,0,0,.55);
+    --c-ai:#a78bfa; --c-be:#6b9bff; --c-fe:#2dd4bf; --c-cl:#fbbf24;
   }
 }
 :root[data-theme="dark"]{
@@ -28,7 +30,15 @@ img{max-width:100%}
   --accent:#6b9bff; --accent-strong:#8fb4ff; --accent-wash:#172236;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
   --shadow-lg:0 2px 6px rgba(0,0,0,.4), 0 20px 46px rgba(0,0,0,.55);
+  --c-ai:#a78bfa; --c-be:#6b9bff; --c-fe:#2dd4bf; --c-cl:#fbbf24;
 }
+
+/* discipline colour, picked up by any element tagged with data-cat */
+[data-cat="ai"]{--c:var(--c-ai)}
+[data-cat="be"]{--c:var(--c-be)}
+[data-cat="fe"]{--c:var(--c-fe)}
+[data-cat="cl"]{--c:var(--c-cl)}
+.sr-only{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth; scroll-padding-top:72px; -webkit-text-size-adjust:100%}
@@ -252,6 +262,66 @@ ul.bullets li::before{
 }
 ul.bullets li b{color:var(--strong)}
 
+/* --- discipline lens (filter cards) --- */
+.lens-bar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:-8px 0 12px; min-height:26px}
+.lens-bar .xp-hint{margin:0}
+.lens-reset{
+  font:inherit; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--accent-strong); background:var(--accent-wash);
+  border:0; border-radius:999px; padding:5px 12px; cursor:pointer;
+}
+.lens-reset:hover{color:var(--strong)}
+.lens{display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:22px}
+@media (max-width:620px){ .lens{grid-template-columns:repeat(2, 1fr)} }
+.lens-card{
+  position:relative; text-align:left; font:inherit; cursor:pointer;
+  display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:10px; row-gap:1px;
+  align-items:center; padding:12px 30px 12px 12px;
+  background:var(--surface); color:var(--ink);
+  border:1px solid var(--border); border-radius:12px;
+  transition:transform .25s cubic-bezier(.22,.68,0,1), box-shadow .25s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+.lens-card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:color-mix(in srgb, var(--c) 45%, var(--border))}
+.lens-ic{
+  grid-row:1 / 3; width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
+  color:var(--c); background:color-mix(in srgb, var(--c) 13%, transparent);
+  transition:background .2s ease, color .2s ease;
+}
+.lens-ic svg{width:17px; height:17px}
+.lens-t{font-weight:700; font-size:13.5px; color:var(--strong); line-height:1.2; letter-spacing:-.005em}
+.lens-s{font-size:11.5px; color:var(--muted); line-height:1.25}
+.lens-n{
+  position:absolute; top:8px; right:9px;
+  font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10px; font-weight:500;
+  color:var(--c); background:color-mix(in srgb, var(--c) 12%, transparent);
+  border-radius:999px; min-width:20px; padding:1px 6px; text-align:center;
+}
+.lens-card[aria-pressed="true"]{
+  border-color:var(--c);
+  background:color-mix(in srgb, var(--c) 7%, var(--surface));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 16%, transparent);
+}
+.lens-card[aria-pressed="true"] .lens-ic{background:var(--c); color:var(--surface)}
+.lens.filtered .lens-card[aria-pressed="false"]{opacity:.55}
+.lens.filtered .lens-card[aria-pressed="false"]:hover{opacity:1}
+@media (prefers-reduced-motion:reduce){ .lens-card{transition:none} }
+
+/* --- grouped highlights inside a role --- */
+.grp{
+  margin-top:16px; padding-left:14px;
+  border-left:2px solid color-mix(in srgb, var(--c) 55%, transparent);
+  animation:fadeIn .25s ease both;
+}
+.grp:first-child{margin-top:4px}
+.grp-h{
+  display:flex; align-items:center; gap:8px;
+  font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; font-weight:500;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--c);
+}
+.grp ul.bullets{margin-top:8px}
+.grp ul.bullets li::before{background:var(--c)}
+@media (prefers-reduced-motion:reduce){ .grp{animation:none} }
+
 /* ================= PROJECTS (grid) ================= */
 .projects-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; align-items:start}
 @media (max-width:560px){ .projects-grid{grid-template-columns:1fr} }
@@ -267,6 +337,13 @@ ul.bullets li b{color:var(--strong)}
   border-color:color-mix(in srgb, var(--accent) 42%, var(--border));
 }
 .pcard:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.pcard .p-cat{
+  align-self:flex-start; display:inline-flex; align-items:center; gap:6px; margin-bottom:9px;
+  font-family:"JetBrains Mono", ui-monospace, monospace; font-size:9.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--c);
+  background:color-mix(in srgb, var(--c) 11%, transparent); border-radius:999px; padding:3px 9px;
+}
+.pcard .p-cat::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--c)}
 .pcard h3{font-size:15.5px; letter-spacing:-.005em; color:var(--strong); text-wrap:balance}
 .pcard .p-sub{color:var(--muted); font-size:12.5px; margin-top:3px}
 .pcard .p-when{
@@ -305,7 +382,9 @@ ul.bullets li b{color:var(--strong)}
 .skillrow .k{
   font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; letter-spacing:.06em;
   text-transform:uppercase; color:var(--muted); padding-top:4px;
+  display:flex; align-items:center; gap:8px;
 }
+.skillrow[data-cat] .k::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--c); flex:none}
 .skillrow .v{display:flex; flex-wrap:wrap; gap:7px}
 
 /* ================= CERTIFICATIONS ================= */
