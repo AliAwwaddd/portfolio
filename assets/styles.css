@@ -79,6 +79,7 @@ img{max-width:100%}
 .nav-menu{display:flex; align-items:center; gap:22px}
 .nav-menu a{color:var(--muted); font-size:13px; font-weight:500; white-space:nowrap}
 .nav-menu a:hover{color:var(--strong); text-decoration:none}
+.nav-menu a[aria-current]{color:var(--accent-strong)}
 .icon-btn{
   background:transparent; border:1px solid var(--border); color:var(--muted);
   width:34px; height:34px; border-radius:9px; cursor:pointer;
@@ -386,6 +387,23 @@ ul.bullets li b{color:var(--strong)}
 }
 .skillrow[data-cat] .k::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--c); flex:none}
 .skillrow .v{display:flex; flex-wrap:wrap; gap:7px}
+/* soft hover highlight in the row's discipline colour (accent for untagged rows);
+   same slow easing in and out, colours + transform only so it stays cheap */
+.skillrow .tag{
+  --hl:var(--c, var(--accent));
+  cursor:default;
+  transition:color .5s cubic-bezier(.22,.61,.36,1), background-color .5s cubic-bezier(.22,.61,.36,1),
+             border-color .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1),
+             box-shadow .5s cubic-bezier(.22,.61,.36,1);
+}
+.skillrow .tag:hover{
+  color:var(--hl);
+  background-color:color-mix(in srgb, var(--hl) 10%, var(--surface));
+  border-color:color-mix(in srgb, var(--hl) 40%, var(--border));
+  transform:translateY(-3px) scale(1.05);
+  box-shadow:0 6px 16px -6px color-mix(in srgb, var(--hl) 45%, transparent);
+}
+@media (prefers-reduced-motion:reduce){ .skillrow .tag{transition:none} .skillrow .tag:hover{transform:none} }
 
 /* ================= CERTIFICATIONS ================= */
 .certs{display:flex; flex-direction:column}
@@ -442,3 +460,48 @@ footer{
 .btn svg{width:15px; height:15px}
 
 a.btn{text-decoration:none}
+
+/* ================= SECTION PROGRESS RAIL (js/rail.js) ================= */
+/* wide screens only: the rail replaces the native scrollbar */
+.rail{display:none}
+@media (min-width:1000px) and (min-height:560px){
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  .rail{
+    display:block; position:fixed; right:26px; top:50%; z-index:40;
+    width:14px; height:min(52vh, 420px); transform:translateY(-50%);
+    opacity:0; transition:opacity .6s ease;
+  }
+  .rail.show{opacity:1}
+}
+.rail-track{
+  position:absolute; left:50%; top:0; bottom:0; width:2px; margin-left:-1px;
+  background:var(--border); border-radius:2px; overflow:hidden;
+}
+.rail-fill{
+  position:absolute; inset:0; transform-origin:top; transform:scaleY(0);
+  background:linear-gradient(to bottom, var(--accent), var(--c-ai));
+  transition:transform .25s linear; will-change:transform;
+}
+.rail-dot{
+  position:absolute; left:50%; width:10px; height:10px; margin:-5px 0 0 -5px;
+  border-radius:50%; background:var(--bg); border:2px solid var(--border);
+  transition:background-color .45s ease, border-color .45s ease, box-shadow .45s ease;
+}
+.rail-dot::after{content:""; position:absolute; inset:-8px; border-radius:50%} /* bigger hit area */
+.rail-dot:hover{text-decoration:none; border-color:var(--accent)}
+.rail-dot.passed{background:var(--accent); border-color:var(--accent)}
+.rail-dot.current{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.rail-label{
+  position:absolute; right:calc(100% + 14px); top:50%; transform:translate(6px, -50%);
+  font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; letter-spacing:.08em;
+  text-transform:uppercase; white-space:nowrap; color:var(--strong);
+  background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:3px 8px;
+  box-shadow:var(--shadow); opacity:0; pointer-events:none;
+  transition:opacity .35s ease, transform .35s cubic-bezier(.22,.61,.36,1);
+}
+.rail-dot:hover .rail-label, .rail-dot:focus-visible .rail-label{opacity:1; transform:translate(0, -50%)}
+@media (prefers-reduced-motion:reduce){ .rail, .rail-fill, .rail-dot, .rail-label{transition:none} }
