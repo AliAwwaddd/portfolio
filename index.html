@@ -330,8 +330,14 @@
                   Built a production <b>voice-first reporting system</b> for multilingual
                   construction crews: workers speak their daily report and a FastAPI AI service uses
                   <b>Claude tool use</b> (schema-as-tool contract) to extract structured tasks
-                  linked to exact database records, grounded by project context ranked in SQL
-                  (context injection over RAG for small, closed entity sets).
+                  linked to exact database records.
+                </li>
+                <li>
+                  Built <b>retrieval-augmented grounding</b> for LLM extraction from construction
+                  voice reports: the transcript is split into segments, and
+                  <b>hybrid search</b> (pgvector cosine similarity + pg_trgm, merged with
+                  <b>reciprocal rank fusion</b>) finds the most relevant materials within the
+                  project.
                 </li>
                 <li>
                   Made LLM output safe to act on: layered checks (Pydantic schema, validators,
@@ -608,7 +614,8 @@
                 >Claude API &middot; tool use, structured outputs, vision, prompt caching</span
               ><span class="tag">MCP server design</span><span class="tag">Agentic workflows</span
               ><span class="tag">LangGraph</span><span class="tag">n8n</span
-              ><span class="tag">Context engineering</span><span class="tag">RAG</span
+              ><span class="tag">Context engineering</span
+              ><span class="tag">RAG &middot; hybrid search, reciprocal rank fusion</span
               ><span class="tag">Guardrails &amp; human-in-the-loop</span
               ><span class="tag">Gemini</span><span class="tag">OpenAI</span>
             </div>
@@ -633,7 +640,7 @@
           <div class="skillrow" data-cat="be">
             <div class="k">Data</div>
             <div class="v">
-              <span class="tag">PostgreSQL &middot; PL/pgSQL</span><span class="tag">MS SQL</span
+              <span class="tag">PostgreSQL &middot; PL/pgSQL, pgvector, pg_trgm</span><span class="tag">MS SQL</span
               ><span class="tag">Supabase</span><span class="tag">Prisma</span
               ><span class="tag">Drizzle</span><span class="tag">NoSQL</span>
             </div>
